@@ -2,7 +2,7 @@
 name = "pizza-analysis-persian"
 version = "0.1.0"
 edition = "2021"
-description = "Persian (Farsi) language analysis components for Pizza search engine"
+description = "Persian (Farsi) text analysis plugin for INFINI Pizza"
 license = "MIT"
 
 [features]
