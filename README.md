@@ -1,50 +1,71 @@
-# pizza-analysis-persian
+<div align="center">
 
-Persian language analysis with Arabic normalization layer, Persian-specific normalization, stemming, and stop words.
+# 🇮🇷 pizza-analysis-persian
 
-Part of the [Pizza](https://pizza.rs) search engine.
+**Persian (Farsi) text analysis plugin for [INFINI Pizza](https://pizza.rs)**
+
+[![Crate](https://img.shields.io/badge/crate-pizza--analysis--persian-blue)](https://github.com/pizza-rs/analysis-persian)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+</div>
+
+---
+
+## Overview
+
+Persian/Farsi language analysis with Arabic script normalization, Persian-specific
+normalization, stemming, and stop words. Handles both Arabic and Persian character
+variants since Persian uses a modified Arabic script.
 
 ## Components
 
-| Name | Type | Description |
-|------|------|-------------|
-| `arabic_normalization` | Token Filter | Removes tatweel, Arabic diacritics; normalizes dotless Yeh and Teh Marbuta |
-| `persian_normalization` | Token Filter | Persian-specific: Yeh/Keh normalization, digit conversion, Alef forms |
-| `persian_stem` | Token Filter | Persian light stemmer |
-| `persian_stop` | Token Filter | Persian stop words filter (308 words) |
-| `persian` | Analyzer | Full pipeline: arabic_normalization → persian_normalization → stop → stem |
+| Type | Name | Description |
+|:-----|:-----|:------------|
+| TokenFilter | `arabic_normalization` | Normalize shared Arabic script characters |
+| TokenFilter | `persian_normalization` | Persian-specific char normalization (ک←ك, ی←ي) |
+| TokenFilter | `persian_stem` | Persian light stemmer |
+| TokenFilter | `persian_stop` | Persian stop words (308 entries) |
+| Analyzer | `persian` | Full pipeline: lowercase → arabic_norm → persian_norm → stem → stop |
 
-## Usage
+### Persian Normalization
 
-### Built-in Analyzer
+| Input | Output | Rule |
+|:------|:-------|:-----|
+| ك (Arabic Kaf) | ک (Persian Kaf) | Script variant |
+| ي (Arabic Ya) | ی (Persian Ya) | Script variant |
+| ۀ (Ha + Hamza) | هٔ | Canonical form |
 
-```json
-{
-  "analyzer": {
-    "type": "persian"
-  }
-}
+## Example
+
+```rust
+use pizza_engine::analysis::AnalysisFactory;
+
+let mut factory = AnalysisFactory::new();
+pizza_analysis_persian::register_all(&mut factory);
+
+let analyzer = factory.get_analyzer("persian").unwrap();
 ```
 
-### Custom Pipeline
+## Installation
 
-```json
-{
-  "analyzer": {
-    "type": "custom",
-    "tokenizer": "standard",
-    "filter": ["arabic_normalization", "persian_normalization", "persian_stem", "persian_stop"]
-  }
-}
+```toml
+[dependencies]
+pizza-analysis-persian = "0.1"
+```
+
+Or via `pizza-analysis-all`:
+
+```toml
+[dependencies]
+pizza-analysis-all = { version = "0.1", features = ["persian"] }
 ```
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT
 
-## Related Crates
+---
 
-- [analysis-core](https://github.com/pizza-rs/analysis-core) — Core analysis components and pipeline
-- [analysis-icu](https://github.com/pizza-rs/analysis-icu) — ICU Unicode normalization and tokenization
-- [analysis-english](https://github.com/pizza-rs/analysis-english) — English analysis
-- [analysis-all](https://github.com/pizza-rs/analysis-all) — Meta-crate registering all analyzers
+<div align="center">
+<sub>Part of the <a href="https://pizza.rs">INFINI Pizza</a> ecosystem</sub>
+</div>
